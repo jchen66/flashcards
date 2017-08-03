@@ -8,79 +8,82 @@ path = '/Users/JiaYin/Desktop/Flashcards/'
 
 
 def QuizMe(sName):
-	##tmpPath=path+'DB_'+sName+'.csv'
-	tmpPath="DB_"+sName+".csv"
+	tmpPath=path+'DB_'+sName+'.csv'
+	##tmpPath="./MCQ_DB/DB_"+sName+".csv"
 	numQuestions=0
 	allQuestions=[]
 	correctQuestions=[]
 	wrongQuestions=[]
 	isSmart=False
 	numAnswers=0
-	cRow=0
+	#skip first row
+	cRow=1
+	tempI=0
 	#first pass
+
 	with open(tmpPath,'r') as quizFile:
 		reader=csv.reader(quizFile)
 		currentQuestion=0
 		
-
-		for row in reader:				
-			tmpRow=row
-			
-
-			#skip first row
-			#collect numAnswers here
-			#numAnswers= total#columns -(id) -question -answer
-			if cRow==0:
-				cRow+=1
-				numAnswers=len(row)-3
+		data=[]
+		for row in reader:
+			if tempI ==0 :
+				tempI+=1
 				continue
-			numQuestions+=1
-			
-			#else: randomize the answers
-			tmpChoices=[]
-			
-			allQuestions.append(row)
+			else:
+				data.append(row)
 
-			#store temporarily the choices to randomize it
-			for y in range(2, numAnswers+2):
-				tmpChoices.append(tmpRow[y])
-			#tmp store the answer
-			tmpAns=tmpRow[numAnswers+2]
+	for i in range(1, len(data)+1):
+		random.shuffle(data)
+		row=data[0]
+		tmpRow = row
+		#collect numAnswers here
+		numAnswers=len(row)-3
+		#else: randomize the answers
+		tmpChoices=[]
+		allQuestions.append(row)
 
-			random.shuffle(tmpChoices)
+		#store temporarily the choices to randomize it
+		for y in range(2, numAnswers+2):
+			tmpChoices.append(tmpRow[y])
+		#tmp store the answer
+		tmpAns=tmpRow[numAnswers+2]
 
-			#print question
-			printQ=str(numQuestions)
-			printQ+=". "+row[1]
-			print(printQ)
-			for x in range(1, numAnswers+1):
-				print("     "+str(x)+'. '+tmpChoices[x-1])
-			input_var=""
-			ans=1
-			isAnsValid=False
+		random.shuffle(tmpChoices)
 
-			#verify answer ()check if int && is between 1 and numQuestions
-			while not isAnsValid:
-				input_var=input('Your Answer: ')
-				if not (isinstance(input_var,int)!=True):
-					print("Invalid Answer. Please enter a number!")
+		#print question
+		printQ=str(i)
+		printQ+=". "+row[1]
+		print(printQ)
+		for x in range(1, numAnswers+1):
+			print("     "+str(x)+'. '+tmpChoices[x-1])
+		input_var=""
+		ans=1
+		isAnsValid=False
+
+		#verify answer ()check if int && is between 1 and numQuestions
+		while not isAnsValid:
+			input_var=input('Your Answer: ')
+			if not (isinstance(input_var,int)!=True):
+				print("Invalid Answer. Please enter a number!")
+				continue
+			else:
+				ans=int(input_var)
+				if(ans>numAnswers or ans<1):
+					print("Invalid Answer. Please enter a number between 1 and "+str(numAnswers)+"!")
 					continue
 				else:
-					ans=int(input_var)
-					if(ans>numAnswers or ans<1):
-						print("Invalid Answer. Please enter a number between 1 and "+str(numAnswers)+"!")
-						continue
-					else:
-						isAnsValid=True
+					isAnsValid=True
 
-			if tmpChoices[ans-1]==tmpAns:
-				print("Correct Answer! Good Job!\n\n\n")
-
-				correctQuestions.append(row)
-			else:
-				print("Wrong Answer! >:( \n\n\n")
-				wrongQuestions.append(row)
-
+		if tmpChoices[ans-1]==tmpAns:
+			print("Correct Answer! Good Job!\n\n\n")
+			correctQuestions.append(row)
+		else:
+			print("Wrong Answer! >:(")
+			print("Answer is: "+ tmpAns +"\n\n\n")
+			wrongQuestions.append(row)
+		numQuestions+=1
+		data.remove(row)
 
 
 	#check if any wrong questions
@@ -98,20 +101,22 @@ def QuizMe(sName):
 		#reset questions stats
 		wrongQuestions=[]
 		correctQuestions=[]
-		for q in tmpQuestions:
+		print("You still have "+ str(len(tmpQuestions))+ " questions to answer correctly.")
+		for i in range(0, len(tmpQuestions)):
+			random.shuffle(tmpQuestions)
+			row=tmpQuestions[0]
+
 			nQ+=1
 			tmpChoices=[]
 			#store temporarily the choices to randomize it
-			for y in range(1, numAnswers):
-				tmpChoices.append(q[y])
+			for y in range(2, numAnswers+2):
+				tmpChoices.append(row[y])
 			#tmp store the answer
-			tmpAns=q[numAnswers+1]
+			tmpAns=row[numAnswers+2]
 
 			random.shuffle(tmpChoices)
-
-
 			#print question
-			print(""+str(nQ)+". "+q[0])
+			print(""+str(nQ)+". "+row[1])
 			for x in range(1, numAnswers+1):
 				print("     "+str(x)+'. '+tmpChoices[x-1])
 			input_var=""
@@ -131,23 +136,22 @@ def QuizMe(sName):
 						continue
 					else:
 						isAnsValid=True
-
+			numQuestions+=1
 			if tmpChoices[ans-1]==tmpAns:
 				print("Correct Answer! Good Job!\n\n\n")
-				correctQuestions.append(q)
+				correctQuestions.append(row)
+				tmpQuestions.remove(row)
 			else:
-				print("Wrong Answer! >:( \n\n\n")
-				wrongQuestions.append(q)
-		if (len(wrongQuestionss)==0):
+				print("Wrong Answer! >:(")
+				print("Answer is: "+ tmpAns +"\n\n\n")
+				wrongQuestions.append(row)
+		if (len(wrongQuestions)==0):
 			isSmart=True
 
 	print("Wow you finished answering all the questions!! You are ready to ace that test! :D ")
 
 print(sys.argv[1])
 QuizMe(str(sys.argv[1]))
-
-
-
 
 
 
