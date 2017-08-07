@@ -64,16 +64,22 @@ def QuizMe(sName):
 		#verify answer ()check if int && is between 1 and numQuestions
 		while not isAnsValid:
 			input_var=input('Your Answer: ')
-			if not (isinstance(input_var,int)!=True):
-				print("Invalid Answer. Please enter a number!")
-				continue
-			else:
+			try: 
 				ans=int(input_var)
 				if(ans>numAnswers or ans<1):
 					print("Invalid Answer. Please enter a number between 1 and "+str(numAnswers)+"!")
 					continue
 				else:
 					isAnsValid=True
+			except ValueError:
+				tmpVar=input_var.strip(' ')
+				if tmpVar.lower()=="quit":
+					print("You've decided to quit! Don't forget to do more exercises!")
+					return 0
+				print("Invalid Answer. Please enter a number!")
+				continue
+
+				
 
 		if tmpChoices[ans-1]==tmpAns:
 			print("Correct Answer! Good Job!\n\n\n")
@@ -126,16 +132,20 @@ def QuizMe(sName):
 			#verify answer ()check if int && is between 1 and numQuestions
 			while not isAnsValid:
 				input_var=input('Your Answer: ')
-				if not (isinstance(input_var,int)!=True):
-					print("Invalid Answer. Please enter a number!")
-					continue
-				else:
+				try: 
 					ans=int(input_var)
 					if(ans>numAnswers or ans<1):
 						print("Invalid Answer. Please enter a number between 1 and "+str(numAnswers)+"!")
 						continue
 					else:
 						isAnsValid=True
+				except ValueError:
+					tmpVar=input_var.strip(' ')
+					if tmpVar.lower()=="quit":
+						print("You've decided to quit! Don't forget to do more exercises!")
+						return 0
+					print("Invalid Answer. Please enter a number!")
+					continue
 			numQuestions+=1
 			if tmpChoices[ans-1]==tmpAns:
 				print("Correct Answer! Good Job!\n\n\n")
@@ -151,6 +161,7 @@ def QuizMe(sName):
 	print("Wow you finished answering all the questions!! You are ready to ace that test! :D ")
 
 print(sys.argv[1])
+
 QuizMe(str(sys.argv[1]))
 
 
